@@ -1,0 +1,42 @@
+ALTER PROCEDURE [dbo].[ManageServiceData]
+    @Action NVARCHAR(10), -- Action to perform: 'INSERT', 'UPDATE', or 'DELETE'
+    @ServiceNumber INT = NULL, -- ServiceNumber is only needed for UPDATE and DELETE
+    @ServiceDate DATE = NULL,
+    @ServiceType NVARCHAR(100) = NULL,
+    @ServiceDetails NVARCHAR(255) = NULL,
+    @VehicleModel NVARCHAR(100) = NULL,
+    @CustomerName NVARCHAR(100) = NULL,
+    @ContactNumber NVARCHAR(15) = NULL,
+    @Email NVARCHAR(100) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF @Action = 'INSERT'
+    BEGIN
+        INSERT INTO ServiceData (ServiceDate, ServiceType, ServiceDetails, VehicleModel, CustomerName, ContactNumber, Email)
+        VALUES (@ServiceDate, @ServiceType, @ServiceDetails, @VehicleModel, @CustomerName, @ContactNumber, @Email);
+    END
+    ELSE IF @Action = 'UPDATE'
+    BEGIN
+        UPDATE ServiceData
+        SET ServiceDate = @ServiceDate,
+            ServiceType = @ServiceType,
+            ServiceDetails = @ServiceDetails,
+            VehicleModel = @VehicleModel,
+            CustomerName = @CustomerName,
+            ContactNumber = @ContactNumber,
+            Email = @Email
+        WHERE ServiceNumber = @ServiceNumber;
+    END
+    ELSE IF @Action = 'DELETE'
+    BEGIN
+     UPDATE ServiceData
+    SET IsActive = 0
+    WHERE ServiceNumber = @ServiceNumber;
+	END
+    ELSE
+    BEGIN
+        RAISERROR('Invalid action specified', 16, 1);
+    END
+END
